@@ -1,8 +1,8 @@
-var screenshotmachine = require('screenshotmachine');
-var fs = require('fs');
+var screenshotmachine = require('screenshotmachine');//allow us to use the API of Screenshot machine
+var fs = require('fs');//allow us to write files
 
-const { google } = require('googleapis');
-const path = require('path')
+const { google } = require('googleapis');//api of Google
+const path = require('path')//allow us to use the path of files in desktop
 
 const CLIENT_ID = '870994141458-4g2a7jlilmbpbm56k0juetmk6duuj78n.apps.googleusercontent.com'
 const CLIENT_SECRET = 'zUxFj_g_qljGeCx_7pkLPxEU'
@@ -22,25 +22,10 @@ const drive = google.drive({
     version:'v3',
     auth: oauth2Client
 })
+//setting the google API to connect with a Drive
+var files = []//array of files we will upload to the Drive 
+var names = []//names of this files
 
-var files = []
-var names = []
-/* var customerKey = 'f4fd95';
-    secretPhrase = ''; //leave secret phrase empty, if not needed
-    options = {
-      //mandatory parameter
-      url : 'https://www.google.com',
-      // all next parameters are optional, see our website screenshot API guide for more details
-      dimension : '1920x1080', // or "1366xfull" for full length screenshot
-      device : 'desktop',
-      format: 'jpg',
-      cacheLimit: '0',
-      delay: '200',
-      zoom: '0'
-    } */
-
-
-//function screenshottool(){
 for (var id = 0; id < 6; id++){
   if(id==0){
     console.log('Initialisation')
@@ -56,7 +41,7 @@ for (var id = 0; id < 6; id++){
     setTimeout(() => screenshot('https://www.realtymogul.com', 5, 'Realty Mogul'), 3000)
   }
 }
-
+//take the screenshot of the 5 websites with the next function, I had the "setTimeout" function because the function screenshot take some times to execute (communicate with the API then download the files, ...)
 
 function screenshot(site, id, name){
   var customerKey = 'f4fd95';
@@ -76,7 +61,7 @@ function screenshot(site, id, name){
     var output = id+'_'+name+'.jpg';
     screenshotmachine.readScreenshot(apiUrl).pipe(fs.createWriteStream(output).on('close', function() {
       console.log('Screenshot saved as ' + output);
-    }));
+    }));//function of the API of screenshot machine
 
     var filePath = path.join(__dirname, output)
 
@@ -88,7 +73,7 @@ function screenshot(site, id, name){
       console.log('Waiting for Google Drive...')
       setTimeout(() => {for (var j=0; j < files.length; j++){
         uploadFile(names[j], files[j])
-      }}, 10000)
+      }}, 10000)//here, we upload the previous screenshot to google Drive, it use the function of the google API
       
       
 
@@ -102,7 +87,7 @@ async function uploadFile(name, path){
           requestBody:{
               name: name,
               mimeType:'image/jpg',
-              parents: ['1JKKAm4dOi8dmvYKR8OlitRh311qOPzyr']
+              parents: ['1JKKAm4dOi8dmvYKR8OlitRh311qOPzyr']//allow us to upload in a specific file and not in the root of the Drive
           },
           media:{
               mimeType: 'image/jpg',
@@ -113,37 +98,4 @@ async function uploadFile(name, path){
   } catch(error){
       console.log(error.message)
   }
-}
-
-//const filePath = path.join(__dirname, '1_iFunded.jpg')
-
-/* async function uploadFile(name, path){
-    try{
-        const response = await drive.files.create({
-            requestBody:{
-                name: name,
-                mimeType:'image/jpg',
-                parents: ['1JKKAm4dOi8dmvYKR8OlitRh311qOPzyr']
-            },
-            media:{
-                mimeType: 'image/jpg',
-                body: fs.createReadStream(path)
-            }
-        })
-        console.log(response.data)
-    } catch(error){
-        console.log(error.message)
-    }
-} */
-
-//var apiUrl = screenshotmachine.generateScreenshotApiUrl(customerKey, secretPhrase, options);
-
-//put link to your html code
-//console.log('<img src="' + apiUrl + '">');
-
-//or save screenshot as an image
-
-//var output = 'output.png';
-//screenshotmachine.readScreenshot(apiUrl).pipe(fs.createWriteStream(output).on('close', function() {
-  //console.log('Screenshot saved as ' + output);
-//}));
+}//function of the Google API to upload a file
